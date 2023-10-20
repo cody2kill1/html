@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jarvis AI</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #jarvis-container {
+            width: 100%;
+            height: 100%;
+            background: url('https://miro.medium.com/v2/resize:fit:2100/1*e_Loq49BI4WmN7o9ItTADg.gif') no-repeat;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #output {
+            color: white;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        #user-input {
+            width: 10%;
+            padding:10px;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="jarvis-container">
+        <div id="output"></div>
+        <input type="text" id="user-input" placeholder="Ask Jarvis..." autofocus>
+    </div>
+
+    <script>
+        const userInputElement = document.getElementById('user-input');
+        const output = document.getElementById('output');
+        const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+        recognition.lang = 'en-US';
+        let listening = false;
+
+        userInputElement.addEventListener('keypress', (event) => {
+            if (event.key === "Enter") {
+                startListening();
+            }
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.toLowerCase();
+            userInputElement.value = transcript;
+            executeCommand(transcript);
+        };
+
+        recognition.onend = () => {
+            if (listening) {
+                startListening();
+            }
+        };
+
+        function startListening() {
+            if (listening) {
+                recognition.stop();
+                output.textContent = "";
+            } else {
+                recognition.start();
+                output.textContent = "Listening...";
+            }
+            listening = !listening;
+        }
+
+        function executeCommand(command) {
+            output.textContent = "You said: " + command;
+
+            if (command.includes("open netflix")) {
+                window.open("https://www.netflix.com", "_blank");
+                respond("Opening Netflix.");
+            } else if (command.includes("open youtube")) {
+                window.open("https://www.youtube.com", "_blank");
+                respond("Opening YouTube.");
+            } else if (command.includes("open forge")) {
+                window.open("https://www.curseforge.com", "_blank");
+                respond("Opening CurseForge.");
+            } else if (command.includes("open word")) {
+                window.open("https://www.office.com", "_blank");
+                respond("Opening Microsoft Word.");
+            } else if (command.includes("open hulu")) {
+                window.open("https://www.hulu.com", "_blank");
+                respond("Opening Hulu.");
+            } else if (command.includes("open time for learning")) {
+                window.open("https://www.time4learning.com/Login/SingleLogin/StudentLogin.aspx?ReturnUrl=%2fApp%2fDashboards%2fHighschool%2f#/planner", "_blank");
+                respond("Opening Time4Learning.");
+            } else if (command.includes("search for")) {
+                const query = command.replace("search for", "").trim();
+                const searchURL = "https://www.google.com/search?q=" + encodeURIComponent(query);
+                window.open(searchURL, "_blank");
+                respond("Searching for: " + query);
+            }else if (command.includes("open music")) {
+                window.open("https://music.youtube.com/", "_blank");
+                respond("Opening YouTube Music.");
+            }else if (command.includes("hello jarvis")) {
+                    respond("hello sir");
+            }else if (command.includes("how is everything going")) {
+                    respond("everything is going well");
+            }else if (command.includes("start up system")) {
+                    respond("System Starting Up");
+            } else {
+                respond("I'm sorry, I don't understand that command.");
+            }
+
+            recognition.onend = () => {
+                if (listening) {
+                    recognition.start();
+                }
+            }
+             function respond(text) {
+            output.textContent = text;
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(text);
+            synth.speak(utterance);
+        }
+    }
+
+    </script>
+</body>
+</html>
